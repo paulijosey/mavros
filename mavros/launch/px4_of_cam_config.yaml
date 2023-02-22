@@ -1,0 +1,26 @@
+%YAML:1.0
+
+cam_device: "/dev/video0"
+cam_output_encoding: "bayer_gbrg8"
+cam_pixel_format: "GBRG"
+cam_fps: 20
+cam_height: 704
+cam_width: 480
+cam_frame_id: "of_cam"
+
+of_multiplicator: 1
+
+of_fast_min_threshold: 10
+of_fast_max_threshold: 512
+of_fast_initial_threshold: 30
+of_fast_corner_values: 9
+
+of_spatial_filter_pts_limit: 2
+
+of_brief_target_descriptors: 500
+of_brief_max_descriptors: 2048
+
+of_hamming_window_width: 32
+of_hamming_window_height: 32
+of_hamming_matching_threshold: 30
+of_hamming_disparity: 50

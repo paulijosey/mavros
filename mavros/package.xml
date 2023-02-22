@@ -57,6 +57,8 @@
   <depend>trajectory_msgs</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
+  <depend>opt_flow_msgs</depend>
+  <depend>computer_vision_msgs</depend>
 
   <test_depend>rosunit</test_depend>
   <test_depend>gtest</test_depend>

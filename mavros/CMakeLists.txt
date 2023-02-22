@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   eigen_conversions
   geographic_msgs
   geometry_msgs
+  opt_flow_msgs
+  computer_vision_msgs
   libmavconn
   mavros_msgs
   nav_msgs
@@ -23,9 +25,13 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_eigen
   tf2_ros
   trajectory_msgs
+  camera_info_manager
+  cv_bridge
+  image_transport
 )
 
 ## System dependencies are found with CMake's conventions
+find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 
 ## Find Eigen
@@ -77,7 +83,7 @@ catkin_python_setup()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES mavros
-  CATKIN_DEPENDS diagnostic_msgs diagnostic_updater eigen_conversions geographic_msgs geometry_msgs libmavconn mavros_msgs message_runtime nav_msgs pluginlib roscpp sensor_msgs std_msgs tf2_ros trajectory_msgs
+  CATKIN_DEPENDS diagnostic_msgs diagnostic_updater eigen_conversions geographic_msgs geometry_msgs libmavconn mavros_msgs message_runtime nav_msgs pluginlib roscpp sensor_msgs std_msgs tf2_ros trajectory_msgs opt_flow_msgs computer_vision_msgs
   DEPENDS Boost EIGEN3 GeographicLib
 )
 
@@ -92,6 +98,7 @@ include_directories(
   ${mavlink_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   ${GeographicLib_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}
 )
 
 add_library(mavros
@@ -105,6 +112,9 @@ add_library(mavros
   src/lib/uas_data.cpp
   src/lib/uas_stringify.cpp
   src/lib/uas_timesync.cpp
+  src/lib/v4l2_camera.cpp
+  src/lib/v4l2_camera_device.cpp
+  src/lib/of_cam_config.cpp
 )
 add_dependencies(mavros
   ${catkin_EXPORTED_TARGETS}
@@ -132,6 +142,7 @@ add_library(mavros_plugins
   src/plugins/hil.cpp
   src/plugins/home_position.cpp
   src/plugins/imu.cpp
+  src/plugins/imu-cam.cpp
   src/plugins/local_position.cpp
   src/plugins/manual_control.cpp
   src/plugins/mission_protocol_base.cpp
