@@ -50,7 +50,7 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	IMUCAMPlugin() : PluginBase(),
-		imu_nh("~imu-cam"),
+		imu_nh("~imu_cam"),
 		has_hr_imu(false),
 		has_raw_imu(false),
 		has_scaled_imu(false),
