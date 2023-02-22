@@ -191,6 +191,7 @@ Image::ConstPtr V4l2CameraDevice::capture()
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
 
+  ros::Time stamp = ros::Time::now();
   // trigger a capture 
   setControlValue("CAM - capture", 1);
   // Dequeue buffer with new image
@@ -201,19 +202,20 @@ Image::ConstPtr V4l2CameraDevice::capture()
         std::to_string(errno).c_str());
     return nullptr;
   }
-  double temp_s = buf.timestamp.tv_sec + buf.timestamp.tv_usec*1e-6;
-  double epochTimeStamp_s = (temp_s + toEpochOffset_s);
-  double header_s, header_ns;
-  header_ns = modf(epochTimeStamp_s, &header_s);
-  header_ns = header_ns*1e9;
+  // double temp_s = buf.timestamp.tv_sec + buf.timestamp.tv_usec*1e-6;
+  // double epochTimeStamp_s = (temp_s + toEpochOffset_s);
+  // double header_s, header_ns;
+  // header_ns = modf(epochTimeStamp_s, &header_s);
+  // header_ns = header_ns*1e9;
 
   // Create image object
   auto img = std::make_unique<Image>();
   img->width = cur_data_format_.width;
   img->height = cur_data_format_.height;
   img->step = cur_data_format_.bytesPerLine;
-  img->header.stamp.sec = header_s;
-  img->header.stamp.nsec = header_ns;
+  img->header.stamp = stamp;
+  // img->header.stamp.sec = header_s;
+  // img->header.stamp.nsec = header_ns;
 
   // Requeue buffer to be reused for new captures
   if (-1 == ioctl(fd_, VIDIOC_QBUF, &buf))
