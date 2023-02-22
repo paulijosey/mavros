@@ -45,11 +45,11 @@ static constexpr double RAD_TO_DEG = 180.0 / M_PI;
 
 
 //! @brief IMU and attitude data publication plugin
-class IMUPlugin : public plugin::PluginBase {
+class IMUCAMPlugin : public plugin::PluginBase {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-	IMUPlugin() : PluginBase(),
+	IMUCAMPlugin() : PluginBase(),
 		imu_nh("~imu-cam"),
 		has_hr_imu(false),
 		has_raw_imu(false),
@@ -102,12 +102,12 @@ public:
 
 	Subscriptions get_subscriptions() override {
 		return {
-			       make_handler(&IMUPlugin::handle_attitude),
-			       make_handler(&IMUPlugin::handle_attitude_quaternion),
-			       make_handler(&IMUPlugin::handle_highres_imu),
-			       make_handler(&IMUPlugin::handle_raw_imu),
-			       make_handler(&IMUPlugin::handle_scaled_imu),
-			       make_handler(&IMUPlugin::handle_scaled_pressure),
+			       make_handler(&IMUCAMPlugin::handle_attitude),
+			       make_handler(&IMUCAMPlugin::handle_attitude_quaternion),
+			       make_handler(&IMUCAMPlugin::handle_highres_imu),
+			       make_handler(&IMUCAMPlugin::handle_raw_imu),
+			       make_handler(&IMUCAMPlugin::handle_scaled_imu),
+			       make_handler(&IMUCAMPlugin::handle_scaled_pressure),
 		};
 	}
 
@@ -589,4 +589,4 @@ private:
 }	// namespace mavros
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(mavros::std_plugins::IMUPlugin, mavros::plugin::PluginBase)
+PLUGINLIB_EXPORT_CLASS(mavros::std_plugins::IMUCAMPlugin, mavros::plugin::PluginBase)
