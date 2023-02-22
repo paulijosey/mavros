@@ -33,9 +33,13 @@ template <typename T>
 T readParam(ros::NodeHandle &n, std::string name)
 {
     T ans;
-    if (n.getParam(name, ans))
+    std::string final_name;
+    if (n.searchParam(name, final_name))
     {
-        ROS_INFO_STREAM("Loaded " << name << ": " << ans);
+        if (n.getParam(final_name, ans))
+        {
+            ROS_INFO_STREAM("Loaded " << name << ": " << ans);
+        }
     }
     else
     {
