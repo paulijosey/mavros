@@ -49,7 +49,7 @@ void readParameters(ros::NodeHandle &n)
 {
     std::string config_file;
     // read file name from param server
-    config_file = readParam<std::string>(n, "config_file");
+    config_file = readParam<std::string>(n, "of_cam_config_yaml");
     cv::FileStorage fsSettings(config_file, cv::FileStorage::READ);
 
     // check if there actually is a file
