@@ -111,10 +111,15 @@ void V4L2Camera::init(ros::NodeHandle nh)
 
   if (!requestFrameRate(FPS))
   {
-    return;
+    ROS_WARN("FPS could not be set");
   }
 
   if(!requestOptFlowSettings())
+  {
+    return;
+  }
+
+  if(!camera_->setControlValue("CAM - set stream to fsync", 1))
   {
     return;
   }
@@ -133,6 +138,7 @@ void V4L2Camera::capture()
   opt_flow_msgs::opt_flow flow;
   // caputre image and optical flow data
   auto img = camera_->capture(flow);
+  ROS_DEBUG_STREAM("CAM Time: " << img->header.stamp);
   if (img == nullptr)
   {
     // Failed capturing image, assume it is temporarily and continue a bit later

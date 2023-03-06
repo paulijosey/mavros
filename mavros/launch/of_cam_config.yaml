@@ -17,10 +17,10 @@ of_fast_corner_values: 9
 
 of_spatial_filter_pts_limit: 2
 
-of_brief_target_descriptors: 500
+of_brief_target_descriptors: 400
 of_brief_max_descriptors: 2048
 
-of_hamming_window_width: 32
-of_hamming_window_height: 32
+of_hamming_window_width: 64
+of_hamming_window_height: 64
 of_hamming_matching_threshold: 30
 of_hamming_disparity: 50

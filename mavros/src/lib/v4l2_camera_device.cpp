@@ -191,8 +191,9 @@ Image::ConstPtr V4l2CameraDevice::capture()
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
 
-  ros::Time stamp = ros::Time::now();
+  // ros::Time stamp = ros::Time::now();
   // trigger a capture 
+  // Start stream
   setControlValue("CAM - capture", 1);
   // Dequeue buffer with new image
   if (-1 == ioctl(fd_, VIDIOC_DQBUF, &buf))
@@ -202,20 +203,20 @@ Image::ConstPtr V4l2CameraDevice::capture()
         std::to_string(errno).c_str());
     return nullptr;
   }
-  // double temp_s = buf.timestamp.tv_sec + buf.timestamp.tv_usec*1e-6;
-  // double epochTimeStamp_s = (temp_s + toEpochOffset_s);
-  // double header_s, header_ns;
-  // header_ns = modf(epochTimeStamp_s, &header_s);
-  // header_ns = header_ns*1e9;
+  double temp_s = buf.timestamp.tv_sec + buf.timestamp.tv_usec*1e-6;
+  double epochTimeStamp_s = (temp_s + toEpochOffset_s);
+  double header_s, header_ns;
+  header_ns = modf(epochTimeStamp_s, &header_s);
+  header_ns = header_ns*1e9;
 
   // Create image object
   auto img = std::make_unique<Image>();
   img->width = cur_data_format_.width;
   img->height = cur_data_format_.height;
   img->step = cur_data_format_.bytesPerLine;
-  img->header.stamp = stamp;
-  // img->header.stamp.sec = header_s;
-  // img->header.stamp.nsec = header_ns;
+  // img->header.stamp = stamp;
+  img->header.stamp.sec = header_s;
+  img->header.stamp.nsec = header_ns;
 
   // Requeue buffer to be reused for new captures
   if (-1 == ioctl(fd_, VIDIOC_QBUF, &buf))
@@ -279,6 +280,15 @@ Image::ConstPtr V4l2CameraDevice::capture(opt_flow_msgs::opt_flow &flow)
   // TODO: not sure if those ranges are super correct ...
   cv::Mat flow_mat = cv_img_raw->image.colRange(0, flow_cols).rowRange(cur_data_format_.height - flow_rows, cur_data_format_.height);
 
+  // clear everything in case there is data left
+  flow.prev_features.data.clear();
+  flow.curr_features.data.clear();
+  flow.flows.data.clear();
+  flow.hamming_distances.first_score.clear();
+  flow.hamming_distances.second_score.clear();
+  flow.prev_features.numFeatures = 0;
+  flow.curr_features.numFeatures = 0;
+
   for (int i = 0; i < flow_cols; i = i + 8)
   {
     for (int j = 0; j < flow_rows; j++)
@@ -286,7 +296,9 @@ Image::ConstPtr V4l2CameraDevice::capture(opt_flow_msgs::opt_flow &flow)
       // check if coordinates are zero! (should be 10 or greater if they contain data)
       prev_point.x = OF_MULT * (flow_mat.at<uint8_t>(j, i + 0) + flow_mat.at<uint8_t>(j, i + 1) * 256);
       prev_point.y = OF_MULT * (flow_mat.at<uint8_t>(j, i + 2) + flow_mat.at<uint8_t>(j, i + 3) * 256);
-      if (!(prev_point.x == 0 || prev_point.y == 0 || flow_mat.at<uint8_t>(j, i + 7) == 0))
+
+      if (!(prev_point.x == 0 || prev_point.y == 0 || flow_mat.at<uint8_t>(j, i + 7) == 0 || 
+          prev_point.x > cur_data_format_.height))
       {
         num_features++;
         // at(row,col)
